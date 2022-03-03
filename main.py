@@ -45,3 +45,20 @@ def rotate(mtr, mode):
         time.sleep(delay)
 
     GPIO.cleanup([direction, step])
+
+
+def chwid(drc, grab):
+    pins = [23, 24]  # [LR, FB]
+    pin = pins[drc]
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin, GPIO.OUT)
+    pwm = GPIO.PWM(pin, 50)
+    pwm.start(0.0)
+
+    if grab:
+        dc = 4.08
+    else:
+        dc = 10.42
+    pwm.ChangeDutyCycle(dc)
+
+    GPIO.cleanup(pin)
