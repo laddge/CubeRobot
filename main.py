@@ -60,5 +60,6 @@ def chwid(drc, grab):
     else:
         dc = 10.42
     pwm.ChangeDutyCycle(dc)
+    time.sleep(.3)
 
     GPIO.cleanup(pin)
