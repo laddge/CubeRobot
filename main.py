@@ -56,10 +56,8 @@ def chwid(drc, grab):
     pwm = GPIO.PWM(pin, 50)
     pwm.start(0.0)
 
-    if grab:
-        dc = 4.08
-    else:
-        dc = 10.42
+    dcs = [[10.42, 4.08], [10.42, 4.08]]
+    dc = dcs[drc][grab]
     pwm.ChangeDutyCycle(dc)
     time.sleep(.3)
 
