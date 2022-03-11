@@ -93,24 +93,28 @@ def run(movestr):
                 mode0 = 1
             else:
                 mode0 = 2
-            if moves[1][0] == "L" or moves[1][0] == "R":
-                if moves[1][0] == "L":
-                    mtr1 = 0
+            if len(moves) > 1:
+                if moves[1][0] == "L" or moves[1][0] == "R":
+                    if moves[1][0] == "L":
+                        mtr1 = 0
+                    else:
+                        mtr1 = 1
+                    if len(moves[1]) == 1:
+                        mode1 = 0
+                    elif moves[1][1] == "'":
+                        mode1 = 1
+                    else:
+                        mode1 = 2
+                    t0 = Thread(target=rotate, args=(mtr0, mode0))
+                    t1 = Thread(target=rotate, args=(mtr1, mode1))
+                    t0.start()
+                    t1.start()
+                    t0.join()
+                    t1.join()
+                    moves = moves[2:]
                 else:
-                    mtr1 = 1
-                if len(moves[1]) == 1:
-                    mode1 = 0
-                elif moves[1][1] == "'":
-                    mode1 = 1
-                else:
-                    mode1 = 2
-                t0 = Thread(target=rotate, args=(mtr0, mode0))
-                t1 = Thread(target=rotate, args=(mtr1, mode1))
-                t0.start()
-                t1.start()
-                t0.join()
-                t1.join()
-                moves = moves[2:]
+                    rotate(mtr0, mode0)
+                    moves = moves[1:]
             else:
                 rotate(mtr0, mode0)
                 moves = moves[1:]
@@ -140,24 +144,28 @@ def run(movestr):
                 mode0 = 1
             else:
                 mode0 = 2
-            if moves[1][0] == "F" or moves[1][0] == "B":
-                if moves[1][0] == "F":
-                    mtr1 = 2
+            if len(moves) > 1:
+                if moves[1][0] == "F" or moves[1][0] == "B":
+                    if moves[1][0] == "F":
+                        mtr1 = 2
+                    else:
+                        mtr1 = 3
+                    if len(moves[1]) == 1:
+                        mode1 = 0
+                    elif moves[1][1] == "'":
+                        mode1 = 1
+                    else:
+                        mode1 = 2
+                    t0 = Thread(target=rotate, args=(mtr0, mode0))
+                    t1 = Thread(target=rotate, args=(mtr1, mode1))
+                    t0.start()
+                    t1.start()
+                    t0.join()
+                    t1.join()
+                    moves = moves[2:]
                 else:
-                    mtr1 = 3
-                if len(moves[1]) == 1:
-                    mode1 = 0
-                elif moves[1][1] == "'":
-                    mode1 = 1
-                else:
-                    mode1 = 2
-                t0 = Thread(target=rotate, args=(mtr0, mode0))
-                t1 = Thread(target=rotate, args=(mtr1, mode1))
-                t0.start()
-                t1.start()
-                t0.join()
-                t1.join()
-                moves = moves[2:]
+                    rotate(mtr0, mode0)
+                    moves = moves[1:]
             else:
                 rotate(mtr0, mode0)
                 moves = moves[1:]
