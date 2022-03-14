@@ -1,4 +1,5 @@
 import kociemba
+import cv2
 import RPi.GPIO as GPIO
 import time
 from threading import Thread
@@ -211,3 +212,132 @@ def run(movestr):
                 else:
                     new.append(move)
             moves = new
+
+
+def getcolor(cap):
+    _, img = cap.read()
+    pieces = [
+        [(500, 100), (580, 100), (500, 20)],
+        [(480, 190), (480, 250), (480, 310)],
+        [(470, 400), (570, 400), (470, 470)],
+        [(260, 100), (320, 100), (380, 100)],
+        [(320, 200), (260, 300), (380, 300)],
+        [(260, 420), (320, 420), (380, 420)],
+        [(160, 100), (60, 100), (160, 20)],
+        [(150, 190), (150, 250), (150, 310)],
+        [(160, 400), (60, 400), (160, 470)]
+    ]
+    colors = []
+    for piece in pieces:
+        hues = []
+        sats = []
+        for point in piece:
+            hsvimg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            hsv = hsvimg[point[1], point[0]]
+            hues.append(hsv[0])
+            sats.append(hsv[1])
+        hue = sum(hues) / len(hues)
+        sat = sum(sats) / len(sats)
+        if sat < 100:
+            color = "w"
+        elif hue <= 10 or 150 < hsv[0]:
+            color = "r"
+        elif 10 < hue <= 30:
+            color = "o"
+        elif 30 < hue <= 40:
+            color = "y"
+        elif 40 < hue <= 90:
+            color = "g"
+        else:
+            color = "b"
+        colors.append(color)
+    return colors
+
+
+def scan():
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    cubestr = [""] * 54
+    c0 = getcolor(cap)
+    cubestr[18:27] = c0
+    run("L R")
+    c1 = getcolor(cap)
+    cubestr[0] = c1[0]
+    cubestr[3] = c1[3]
+    cubestr[6] = c1[6]
+    cubestr[29] = c1[2]
+    cubestr[32] = c1[5]
+    cubestr[35] = c1[8]
+    run("L R")
+    c2 = getcolor(cap)
+    cubestr[45] = c2[8]
+    cubestr[47] = c2[6]
+    cubestr[48] = c2[5]
+    cubestr[50] = c2[3]
+    cubestr[51] = c2[2]
+    cubestr[53] = c2[0]
+    run("L R")
+    c3 = getcolor(cap)
+    cubestr[2] = c3[2]
+    cubestr[5] = c3[5]
+    cubestr[8] = c3[8]
+    cubestr[27] = c3[0]
+    cubestr[30] = c3[3]
+    cubestr[33] = c3[6]
+    run("L R F B")
+    c4 = getcolor(cap)
+    cubestr[9:12] = c4[:3]
+    cubestr[42:45] = c4[6:]
+    run("F B")
+    c5 = getcolor(cap)
+    cubestr[46] = c5[1]
+    cubestr[52] = c5[7]
+    run("F B")
+    c6 = getcolor(cap)
+    cubestr[15:18] = c6[6:]
+    cubestr[36:39] = c6[:3]
+    run("F B U D")
+    c7 = getcolor(cap)
+    cubestr[4] = c7[4]
+    cubestr[14] = c7[1]
+    cubestr[41] = c7[7]
+    run("F B")
+    c8 = getcolor(cap)
+    cubestr[28] = c8[7]
+    cubestr[34] = c8[1]
+    run("F B")
+    c9 = getcolor(cap)
+    cubestr[12] = c9[7]
+    cubestr[39] = c9[1]
+    run("F B")
+    cap.release()
+
+    colors = "wrgyob"
+    U = cubestr[4]
+    F = cubestr[22]
+    D = colors[(colors.find(U) + 3) % 6]
+    B = colors[(colors.find(F) + 3) % 6]
+    cubestr[31] = D
+    cubestr[49] = B
+    rl = colors.translate(str.maketrans("", "", f"{U}{F}{D}{B}"))
+    if colors.find(U) % 3 + colors.find(F) % 3 in [1, 3]:
+        if colors.find(U) % 3 < colors.find(F) % 3:
+            i = 1
+        else:
+            i = 0
+    else:
+        if colors.find(U) % 3 < colors.find(F) % 3:
+            i = 0
+        else:
+            i = 1
+    if colors.find(U) > 2:
+        i = (i + 1) % 2
+    if colors.find(F) > 2:
+        i = (i + 1) % 2
+    R = rl[i]
+    L = rl[(i + 1) % 2]
+    cubestr[13] = R
+    cubestr[40] = L
+
+    cubestr = "".join(cubestr).translate(str.maketrans(f"{U}{F}{D}{B}{R}{L}", "UFDBRL"))
+    return cubestr
