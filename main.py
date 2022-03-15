@@ -47,6 +47,7 @@ def rotate(mtr, mode):
         time.sleep(delay)
 
     GPIO.cleanup([direction, step])
+    time.sleep(.3)
 
 
 def chwid(drc, grab):
@@ -63,6 +64,7 @@ def chwid(drc, grab):
     time.sleep(.3)
 
     GPIO.cleanup(pin)
+    time.sleep(.3)
 
 
 def run(movestr):
