@@ -200,6 +200,7 @@ def run(movestr):
             t1.start()
             t0.join()
             t1.join()
+            chwid(0, 1)
             chwid(1, 1)
             new = []
             for move in moves:
