@@ -186,7 +186,7 @@ def run(movestr):
                     chwid(1, 0)
                     rotate(2, 0)
                 elif HOR[3]:
-                    chwid(2, 0)
+                    chwid(1, 0)
                     rotate(3, 0)
                 chwid(1, 1)
             if HOR[0] == HOR[1]:
@@ -219,37 +219,33 @@ def run(movestr):
 
 def getcolor(cap):
     _, img = cap.read()
-    pieces = [
-        [(500, 100), (580, 100), (500, 20)],
-        [(480, 190), (480, 250), (480, 310)],
-        [(470, 400), (570, 400), (470, 470)],
-        [(260, 100), (320, 100), (380, 100)],
-        [(320, 200), (260, 300), (380, 300)],
-        [(260, 420), (320, 420), (380, 420)],
-        [(160, 100), (60, 100), (160, 20)],
-        [(150, 190), (150, 250), (150, 310)],
-        [(160, 400), (60, 400), (160, 470)]
+    points = [
+        (480, 100),
+        (480, 280),
+        (480, 450),
+        (300, 100),
+        (300, 280),
+        (300, 450),
+        (120, 100),
+        (120, 280),
+        (120, 450),
     ]
     colors = []
-    for piece in pieces:
-        hues = []
-        sats = []
-        for point in piece:
-            hsvimg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-            hsv = hsvimg[point[1], point[0]]
-            hues.append(hsv[0])
-            sats.append(hsv[1])
-        hue = sum(hues) / len(hues)
-        sat = sum(sats) / len(sats)
-        if sat < 100:
+    for point in points:
+        hsvimg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        hsv = hsvimg[point[1], point[0]]
+        hue = hsv[0]
+        sat = hsv[1]
+        val = hsv[2]
+        if sat < 70 and val > 150:
             color = "w"
-        elif hue <= 10 or 150 < hsv[0]:
-            color = "r"
-        elif 10 < hue <= 30:
+        elif sat < 150 and val < 120:
             color = "o"
-        elif 30 < hue <= 40:
+        elif hue <= 25 or 150 < hsv[0]:
+            color = "r"
+        elif 25 < hue <= 50:
             color = "y"
-        elif 40 < hue <= 90:
+        elif 50 < hue <= 90:
             color = "g"
         else:
             color = "b"
@@ -313,6 +309,9 @@ def scan():
     cubestr[12] = c9[7]
     cubestr[39] = c9[1]
     run("F B")
+    c10 = getcolor(cap)
+    cubestr[1] = c10[1]
+    cubestr[7] = c10[7]
     cap.release()
 
     colors = "wrgyob"
